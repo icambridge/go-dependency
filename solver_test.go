@@ -50,7 +50,8 @@ func Test_Gets_Correct(t *testing.T) {
 		"behat/mink-symfony": minkSymfonyBrowser,
 	}
 
-	required := SolveDependencies(packages)
+	s := Solver{packages}
+	required := s.Solve()
 
 	if minkV := "1.5.1"; minkV != required["behat/mink"] {
 		t.Errorf("Expected to require %v but got %v", minkV, required["behat/mink"])

@@ -1,16 +1,12 @@
 package dependency
 
-type Dependency struct {
-	Name     string
-	Version  string
-	Requires map[string]string
+type Solver struct {
+	Packages map[string]map[string]Dependency
 }
 
-func SolveDependencies(packages map[string]map[string]Dependency) map[string]string {
+func (s Solver) Solve() map[string]string {
 
 	required := map[string]string{}
-
-
 
     return required
 }
