@@ -1,4 +1,4 @@
-package gomposer
+package dependency
 
 import (
 	"testing"
