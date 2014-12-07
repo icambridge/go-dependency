@@ -11,7 +11,7 @@ type Solver struct {
 func (s Solver) Solve(root Dependency) map[string]string {
 
 	required := map[string]string{}
-	// found :=
+
 	for packageName, rule := range root.Requires {
 		cg := version.NewConstrainGroupFromString(rule)
 		versionSet := GetVersionNumbers(s.Packages[packageName])
