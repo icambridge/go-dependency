@@ -33,8 +33,8 @@ type DependencyRepo struct {
 
 func (r DependencyRepo) GetAll(dependencies mapset.Set) {
 
+	// check to see if there is 100% intersect if so bail
 	f := dependencies.Intersect(r.DependencyNames)
-
 	if f.Cardinality() == dependencies.Cardinality() {
 		return
 	}
@@ -48,7 +48,7 @@ func (r DependencyRepo) GetAll(dependencies mapset.Set) {
 		if err != nil {
 			panic(err)
 		}
-
+		r.Dependencies[name] = dm
 		for _, sd := range dm {
 			for packageName, _ := range sd.Requires {
 				subDependencies.Add(packageName)
