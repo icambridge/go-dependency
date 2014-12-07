@@ -14,7 +14,8 @@ func (s Solver) Solve(root Dependency) map[string]string {
 	// found :=
 	for packageName, rule := range root.Requires {
 		cg := version.NewConstrainGroupFromString(rule)
-		versions := s.Packages[packageName]
+		versions := GetVersionNumbers(s.Packages[packageName])
+		versions = PrepVersionNumbers(versions)
 		for versionNum, _ := range versions {
 			if cg.Match(versionNum) {
 				required[packageName] = versionNum
