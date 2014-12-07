@@ -21,13 +21,13 @@ func GetPackageNames(d Dependency) mapset.Set {
 	return packages
 }
 
-// type DependencyFetcher interface {
-// 	Get(dependencyName string) (Dependency, error)
-// }
-//
-// type DependencyRepo struct {
-//
-// }
+type DependencyFetcher interface {
+ 	Get(dependencyName string) (Dependency, error)
+}
+
+type DependencyRepo struct {
+
+}
 //
 // func (r DependencyRepo) GetAll(d Dependency) mapset.Set {
 //
