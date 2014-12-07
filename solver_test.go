@@ -126,12 +126,6 @@ func Test_Merge_Rules(t *testing.T) {
 	s := Solver{}
 	actual := s.mergeRules(allRules)
 
-	// expected := map[string]map[string][]string{
-	// 	"behat/mink": map[string][]string{
-	// 		"~1.6": []string{"behat/symfony"},
-	// 		"~1.5": []string{"behat/symfony", "behat/mink-ext"},
-	// 	},
-	// }
 
 	if len(actual) != 1 {
 		t.Errorf("Expected to be one got %v", len(actual))
