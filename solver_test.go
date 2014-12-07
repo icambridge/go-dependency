@@ -3,6 +3,7 @@ package dependency
 import (
 	"reflect"
 	"testing"
+	set "github.com/deckarep/golang-set"
 )
 
 func Test_Gets_Correct(t *testing.T) {
@@ -126,7 +127,6 @@ func Test_Merge_Rules(t *testing.T) {
 	s := Solver{}
 	actual := s.mergeRules(allRules)
 
-
 	if len(actual) != 1 {
 		t.Errorf("Expected to be one got %v", len(actual))
 	}
@@ -138,8 +138,30 @@ func Test_Merge_Rules(t *testing.T) {
 	if len(actual[name]["~1.5"]) != 2 {
 		t.Errorf("Expected to be two")
 	}
+	expected15 := []string{"behat/mink-ext", "behat/symfony"}
+	Sx := NewSetFromStringSlice(actual[name]["~1.5"])
+	Sy := NewSetFromStringSlice(expected15)
 
+	if Sx.Equal(Sy) {
+		t.Errorf("Got %v, expected %v", actual[name]["~1.5"], expected15)
+	}
+	expected16 := []string{"behat/symfony"}
+	Sx = NewSetFromStringSlice(actual[name]["~1.6"])
+	Sy = NewSetFromStringSlice(expected16)
 	if len(actual[name]["~1.6"]) != 1 {
 		t.Errorf("Expected to be one")
 	}
+
+	if Sx.Equal(Sy) {
+		t.Errorf("Got %v, expected %v", actual[name]["~1.6"], expected16)
+	}
+}
+
+
+func NewSetFromStringSlice(s []string) set.Set {
+	a := set.NewSet()
+	for _, item := range s {
+		a.Add(item)
+	}
+	return a
 }
