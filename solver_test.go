@@ -1,9 +1,9 @@
 package dependency
 
 import (
+	set "github.com/deckarep/golang-set"
 	"reflect"
 	"testing"
-	set "github.com/deckarep/golang-set"
 )
 
 func Test_Gets_Correct(t *testing.T) {
@@ -157,6 +157,91 @@ func Test_Merge_Rules(t *testing.T) {
 	}
 }
 
+func Test_SuggestPackage_15(t *testing.T) {
+
+	requiringPackages := []string{"behat/symfony", "behat/mink-ext"}
+
+	rules := map[string][]string{
+		"~1.6": []string{"behat/symfony"},
+		"~1.5": []string{"behat/symfony", "behat/mink-ext"},
+	}
+
+	s := Solver{}
+
+	actual := s.getSuggestionRule(requiringPackages, rules)
+	expected := "~1.5"
+	if expected != actual {
+		t.Errorf("Expected to get rule %v, but got %v", expected, actual)
+	}
+}
+
+func Test_SuggestPackage_15_With_Wildcard(t *testing.T) {
+
+	requiringPackages := []string{"behat/symfony", "behat/mink-ext", "icambridge/demo"}
+
+	rules := map[string][]string{
+		"~1.6": []string{"behat/symfony"},
+		"~1.5": []string{"behat/symfony", "behat/mink-ext"},
+		"*":    []string{"icambridge/demo"},
+	}
+
+	s := Solver{}
+	actual := s.getSuggestionRule(requiringPackages, rules)
+	expected := "~1.5"
+	if expected != actual {
+		t.Errorf("Expected to get rule %v, but got %v", expected, actual)
+	}
+}
+
+func Test_All_Pass_False(t *testing.T) {
+
+	rules := map[string][]string{
+		"~1.6": []string{"behat/symfony"},
+		">1.5": []string{"behat/symfony", "behat/mink-ext"},
+		"*":    []string{"icambridge/demo"},
+	}
+
+	mink := map[string]Dependency{
+		"2.6.0": Dependency{
+			Name:    "behat/mink",
+			Version: "2.6.0",
+		},
+		"1.5.1": Dependency{
+			Name:    "behat/mink",
+			Version: "1.5.1",
+		},
+	}
+
+	actual := allPass(rules, mink)
+
+	if actual {
+		t.Errorf("Expected not to be true")
+	}
+}
+
+func Test_All_Pass_True(t *testing.T) {
+
+	rules := map[string][]string{
+		">1.5": []string{"behat/symfony", "behat/mink-ext"},
+		"*":    []string{"icambridge/demo"},
+	}
+
+	mink := map[string]Dependency{
+		"2.6.0": Dependency{
+			Name:    "behat/mink",
+			Version: "2.6.0",
+		},
+		"1.5.1": Dependency{
+			Name:    "behat/mink",
+			Version: "1.5.1",
+		},
+	}
+
+	actual := allPass(rules, mink)
+	if !actual {
+		t.Errorf("Expected to be true")
+	}
+}
 
 func NewSetFromStringSlice(s []string) set.Set {
 	a := set.NewSet()

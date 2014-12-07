@@ -1,5 +1,9 @@
 package dependency
 
+import (
+	"github.com/mcuadros/go-version"
+)
+
 type Solver struct {
 	Packages map[string]map[string]Dependency
 }
@@ -64,4 +68,36 @@ func (s Solver) mergeRules(rules map[string]map[string]map[string][]string) map[
 	}
 
 	return mergedRules
+}
+
+func (s Solver) getSuggestionRule(packagesRequiring []string, rules map[string][]string) string {
+
+	for rule, packages := range rules {
+		if len(packagesRequiring) == len(packages) {
+			return rule
+		}
+	}
+
+	return "nil"
+}
+
+func allPass(rules map[string][]string, versions map[string]Dependency) bool {
+
+	ruleCount := len(rules)
+	for versionNum, _ := range versions {
+
+		counter := 0
+		for rule, _ := range rules {
+			cg := version.NewConstrainGroupFromString(rule)
+
+			if cg.Match(versionNum) {
+				counter++
+			}
+		}
+
+		if counter == ruleCount {
+			return true
+		}
+	}
+	return false
 }
