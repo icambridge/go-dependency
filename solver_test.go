@@ -63,7 +63,6 @@ func Test_Gets_Correct(t *testing.T) {
 	s := Solver{packages}
 	required := s.Solve(root)
 
-
 	if minkExtV := "1.4.1"; minkExtV != required["behat/mink-ext"] {
 		t.Errorf("Expected to require %v but got %v", minkExtV, required["behat/mink-ext"])
 		return
