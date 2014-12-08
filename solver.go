@@ -38,16 +38,23 @@ func (s Solver) Inner(rules map[string][]string) {
 				}
 			}
 			if passes == expectedTotal {
-				s.Found[packageName] = versionNum
-				required = append(required, s.Packages[packageName][versionNum])
+				// TODO log rules
+				foundVersion, ok := s.Found[packageName]
+				if !ok || foundVersion != versionNum {
+					s.Found[packageName] = versionNum
+					required = append(required, s.Packages[packageName][versionNum])
+				}
 				break
 			}
 		}
+		// TODO throw error because nothing was found.
 	}
 
 	newRules := GetRules(required)
 	s.Inner(newRules)
 }
+
+
 
 func GetRules(dependency []Dependency) map[string][]string {
 
