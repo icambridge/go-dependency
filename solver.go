@@ -6,11 +6,10 @@ import (
 
 type Solver struct {
 	Packages map[string]map[string]Dependency
+	Required map[string]string
 }
 
 func (s Solver) Solve(root Dependency) map[string]string {
-
-	required := map[string]string{}
 
 	for packageName, rule := range root.Requires {
 		cg := version.NewConstrainGroupFromString(rule)
@@ -18,11 +17,11 @@ func (s Solver) Solve(root Dependency) map[string]string {
 		versions := PrepVersionNumbers(versionSet)
 		for _, versionNum := range versions {
 			if cg.Match(versionNum) {
-				required[packageName] = versionNum
+				s.Required[packageName] = versionNum
 				break
 			}
 		}
 	}
 
-	return required
+	return s.Required
 }

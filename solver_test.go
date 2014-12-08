@@ -58,7 +58,7 @@ func Test_Gets_Correct(t *testing.T) {
 		},
 	}
 
-	s := Solver{packages}
+	s := Solver{packages, map[string]string{}}
 	required := s.Solve(root)
 
 	if minkExtV := "1.4.1"; minkExtV != required["behat/mink-ext"] {
