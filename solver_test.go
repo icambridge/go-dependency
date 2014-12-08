@@ -76,7 +76,6 @@ func Test_Gets_Correct(t *testing.T) {
 	}
 }
 
-
 func Test_Gets_Correct_Including_Second_Layer(t *testing.T) {
 
 	mink := map[string]Dependency{
@@ -231,7 +230,6 @@ func Test_Gets_Correct_Without_Infinite_Loop(t *testing.T) {
 		return
 	}
 }
-
 
 func Test_Gets_Correct_With_Sub_Dependency_Rules_Applied(t *testing.T) {
 

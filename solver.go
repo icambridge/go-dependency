@@ -3,8 +3,8 @@ package dependency
 import (
 	"errors"
 	"fmt"
-	"github.com/mcuadros/go-version"
 	"github.com/deckarep/golang-set"
+	"github.com/mcuadros/go-version"
 )
 
 type Solver struct {
@@ -22,12 +22,11 @@ func (s Solver) Solve(root Dependency) (map[string]string, error) {
 	return s.Found, err
 }
 
-func (s Solver) Inner(rules map[string]mapset.Set) (error) {
+func (s Solver) Inner(rules map[string]mapset.Set) error {
 	if len(rules) == 0 {
 		return nil
 	}
 	required := []Dependency{}
-
 
 	for packageName, packageRules := range rules {
 
@@ -40,7 +39,7 @@ func (s Solver) Inner(rules map[string]mapset.Set) (error) {
 		s.Rules[packageName] = s.Rules[packageName].Union(packageRules)
 
 		expectedTotal := s.Rules[packageName].Cardinality()
-		found :=  false
+		found := false
 
 		versionSet := GetVersionNumbers(s.Packages[packageName])
 		versions := PrepVersionNumbers(versionSet)
@@ -75,8 +74,6 @@ func (s Solver) Inner(rules map[string]mapset.Set) (error) {
 	newRules := GetRules(required)
 	return s.Inner(newRules)
 }
-
-
 
 func GetRules(dependency []Dependency) map[string]mapset.Set {
 
