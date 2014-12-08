@@ -1,37 +1,56 @@
 package dependency
 
 import (
+	"errors"
+	"fmt"
 	"github.com/mcuadros/go-version"
+	"github.com/deckarep/golang-set"
 )
 
 type Solver struct {
 	Packages map[string]map[string]Dependency
 	Required map[string]string
 	Found    map[string]string
+	Rules    map[string]mapset.Set
 }
 
-func (s Solver) Solve(root Dependency) map[string]string {
+func (s Solver) Solve(root Dependency) (map[string]string, error) {
 
 	rules := GetRules([]Dependency{root})
-	s.Inner(rules)
+	err := s.Inner(rules)
 
-	return s.Found
+	return s.Found, err
 }
 
-func (s Solver) Inner(rules map[string][]string) {
+func (s Solver) Inner(rules map[string]mapset.Set) (error) {
 	if len(rules) == 0 {
-		return
+		return nil
 	}
 	required := []Dependency{}
+
+
 	for packageName, packageRules := range rules {
-		expectedTotal := len(packageRules)
+
+		_, ok := s.Rules[packageName]
+
+		if !ok {
+			s.Rules[packageName] = mapset.NewSet()
+		}
+
+		s.Rules[packageName] = s.Rules[packageName].Union(packageRules)
+
+		expectedTotal := s.Rules[packageName].Cardinality()
+		found :=  false
 
 		versionSet := GetVersionNumbers(s.Packages[packageName])
 		versions := PrepVersionNumbers(versionSet)
+
 		for _, versionNum := range versions {
 			passes := 0
-			for _, packageRule := range packageRules {
+
+			for _, packageRuleI := range s.Rules[packageName].ToSlice() {
 				// todo move to one creation
+				packageRule := fmt.Sprintf("%s", packageRuleI)
 				cg := version.NewConstrainGroupFromString(packageRule)
 				if cg.Match(versionNum) {
 					passes++
@@ -39,6 +58,7 @@ func (s Solver) Inner(rules map[string][]string) {
 			}
 			if passes == expectedTotal {
 				// TODO log rules
+				found = true
 				foundVersion, ok := s.Found[packageName]
 				if !ok || foundVersion != versionNum {
 					s.Found[packageName] = versionNum
@@ -47,32 +67,35 @@ func (s Solver) Inner(rules map[string][]string) {
 				break
 			}
 		}
-		// TODO throw error because nothing was found.
+		if !found {
+			return errors.New(fmt.Sprintf("Couldn't find a package for %s", packageName))
+		}
 	}
 
 	newRules := GetRules(required)
-	s.Inner(newRules)
+	return s.Inner(newRules)
 }
 
 
 
-func GetRules(dependency []Dependency) map[string][]string {
+func GetRules(dependency []Dependency) map[string]mapset.Set {
 
-	find := map[string][]string{}
+	find := map[string]mapset.Set{}
 	for _, root := range dependency {
 		for requiredName, requiredRule := range root.Requires {
 
 			_, ok := find[requiredName]
 
 			if !ok {
-				find[requiredName] = []string{}
+				find[requiredName] = mapset.NewSet()
 			}
-			find[requiredName] = append(find[requiredName], requiredRule)
+			find[requiredName].Add(requiredRule)
 		}
 	}
 	return find
 }
 
 func NewSolver(packages map[string]map[string]Dependency) Solver {
-	return Solver{packages, map[string]string{}, map[string]string{}}
+
+	return Solver{packages, map[string]string{}, map[string]string{}, map[string]mapset.Set{}}
 }
