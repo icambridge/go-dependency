@@ -8,10 +8,11 @@ import (
 )
 
 type Solver struct {
-	Packages map[string]map[string]Dependency
-	Required map[string]string
-	Found    map[string]string
-	Rules    map[string]mapset.Set
+	Packages        map[string]map[string]Dependency
+	Required        map[string]string
+	Found           map[string]string
+	Rules           map[string]mapset.Set
+	RuleConstraints map[string]*version.ConstraintGroup
 }
 
 func (s Solver) Solve(root Dependency) (map[string]string, error) {
@@ -50,13 +51,17 @@ func (s Solver) Inner(rules map[string]mapset.Set) error {
 			for _, packageRuleI := range s.Rules[packageName].ToSlice() {
 				// todo move to one creation
 				packageRule := fmt.Sprintf("%s", packageRuleI)
-				cg := version.NewConstrainGroupFromString(packageRule)
+				cg, found := s.RuleConstraints[packageRule]
+				if !found {
+					cg = version.NewConstrainGroupFromString(packageRule)
+					s.RuleConstraints[packageRule] = cg
+				}
+
 				if cg.Match(versionNum) {
 					passes++
 				}
 			}
 			if passes == expectedTotal {
-				// TODO log rules
 				found = true
 				foundVersion, ok := s.Found[packageName]
 				if !ok || foundVersion != versionNum {
@@ -94,5 +99,5 @@ func GetRules(dependency []Dependency) map[string]mapset.Set {
 
 func NewSolver(packages map[string]map[string]Dependency) Solver {
 
-	return Solver{packages, map[string]string{}, map[string]string{}, map[string]mapset.Set{}}
+	return Solver{packages, map[string]string{}, map[string]string{}, map[string]mapset.Set{}, map[string]*version.ConstraintGroup{}}
 }
