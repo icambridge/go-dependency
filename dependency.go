@@ -59,8 +59,6 @@ func (r DependencyRepo) GetAll(dependencies mapset.Set) {
 	r.GetAll(subDependencies)
 }
 
-
-
 func GetNewRepo(fetcher DependencyFetcher) DependencyRepo {
 	dr := DependencyRepo{
 
