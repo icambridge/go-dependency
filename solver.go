@@ -19,7 +19,10 @@ func (s Solver) Solve(root Dependency) map[string]string {
 }
 
 func (s Solver) Inner(rules map[string][]string) {
-//	required := []Dependency{}
+	if len(rules) == 0 {
+		return
+	}
+	required := []Dependency{}
 	for packageName, packageRules := range rules {
 		expectedTotal := len(packageRules)
 
@@ -36,10 +39,14 @@ func (s Solver) Inner(rules map[string][]string) {
 			}
 			if passes == expectedTotal {
 				s.Found[packageName] = versionNum
+				required = append(required, s.Packages[packageName][versionNum])
 				break
 			}
 		}
 	}
+
+	newRules := GetRules(required)
+	s.Inner(newRules)
 }
 
 func GetRules(dependency []Dependency) map[string][]string {
