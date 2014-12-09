@@ -9,6 +9,7 @@ type Dependency struct {
 	Name     string
 	Version  string
 	Requires map[string]string
+	Replaces map[string]string
 }
 
 func GetPackageNames(d Dependency) mapset.Set {
