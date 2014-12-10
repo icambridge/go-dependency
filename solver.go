@@ -11,7 +11,7 @@ type Solver struct {
 	Packages        map[string]map[string]Dependency
 	Required        map[string]string
 	Found           map[string]string
-	Replaced        map[string]bool
+	Replaced        mapset.Set
 	Rules           map[string]mapset.Set
 	RuleConstraints map[string]*version.ConstraintGroup
 }
@@ -23,8 +23,7 @@ func (s Solver) Solve(root Dependency) (map[string]string, error) {
 	output := map[string]string{}
 
 	for k, v := range s.Found {
-		_, found := s.Replaced[k]
-		if !found {
+		if !s.Replaced.Contains(k) {
 			output[k] = v
 		}
 	}
@@ -39,6 +38,10 @@ func (s Solver) Inner(rules map[string]mapset.Set) error {
 	required := []Dependency{}
 
 	for packageName, packageRules := range rules {
+
+		if s.Replaced.Contains(packageName) {
+			continue
+		}
 
 		_, ok := s.Rules[packageName]
 
@@ -77,10 +80,6 @@ func (s Solver) Inner(rules map[string]mapset.Set) error {
 					s.Found[packageName] = versionNum
 					foundV :=  s.Packages[packageName][versionNum]
 					required = append(required, foundV)
-
-					for k, _ := range foundV.Replaces {
-						s.Replaced[k] = true
-					}
 				}
 				break
 			}
@@ -111,7 +110,7 @@ func GetRules(dependency []Dependency) map[string]mapset.Set {
 	return find
 }
 
-func NewSolver(packages map[string]map[string]Dependency) Solver {
+func NewSolver(packages map[string]map[string]Dependency, replaces mapset.Set) Solver {
 
-	return Solver{packages, map[string]string{}, map[string]string{}, map[string]bool{}, map[string]mapset.Set{}, map[string]*version.ConstraintGroup{}}
+	return Solver{packages, map[string]string{}, map[string]string{}, replaces, map[string]mapset.Set{}, map[string]*version.ConstraintGroup{}}
 }

@@ -2,6 +2,7 @@ package dependency
 
 import (
 	"testing"
+	"github.com/deckarep/golang-set"
 )
 
 func Test_Gets_Correct(t *testing.T) {
@@ -58,7 +59,7 @@ func Test_Gets_Correct(t *testing.T) {
 		},
 	}
 
-	s := NewSolver(packages)
+	s := NewSolver(packages, mapset.NewSet())
 	required, err := s.Solve(root)
 
 	if err != nil {
@@ -130,7 +131,7 @@ func Test_Gets_Correct_Including_Second_Layer(t *testing.T) {
 		},
 	}
 
-	s := NewSolver(packages)
+	s := NewSolver(packages, mapset.NewSet())
 	required, err := s.Solve(root)
 
 	if err != nil {
@@ -209,7 +210,7 @@ func Test_Gets_Correct_Without_Infinite_Loop(t *testing.T) {
 		},
 	}
 
-	s := NewSolver(packages)
+	s := NewSolver(packages, mapset.NewSet())
 	required, err := s.Solve(root)
 
 	if err != nil {
@@ -291,7 +292,7 @@ func Test_Gets_Correct_With_Sub_Dependency_Rules_Applied(t *testing.T) {
 		},
 	}
 
-	s := NewSolver(packages)
+	s := NewSolver(packages, mapset.NewSet())
 	required, err := s.Solve(root)
 
 	if err != nil {
@@ -374,7 +375,7 @@ func Test_Gets_Errors(t *testing.T) {
 		},
 	}
 
-	s := NewSolver(packages)
+	s := NewSolver(packages, mapset.NewSet())
 	_, err := s.Solve(root)
 
 	if err == nil {
@@ -465,8 +466,9 @@ func Test_Gets_Replaces(t *testing.T) {
 			"behat/mink-ext":     "~1.1",
 		},
 	}
-
-	s := NewSolver(packages)
+	replaced := mapset.NewSet()
+	replaced.Add("behat/mink")
+	s := NewSolver(packages, replaced)
 	required, err := s.Solve(root)
 
 	if err != nil {
