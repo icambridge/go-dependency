@@ -28,6 +28,7 @@ type DependencyFetcher interface {
 
 type DependencyRepo struct {
 	DependencyNames mapset.Set
+	Replaces mapset.Set
 	Dependencies    map[string]map[string]Dependency
 	Fetcher         DependencyFetcher
 }
@@ -39,20 +40,29 @@ func (r DependencyRepo) GetAll(dependencies mapset.Set) {
 	if f.Cardinality() == dependencies.Cardinality() {
 		return
 	}
-
+	d := dependencies.Difference(r.DependencyNames)
 	subDependencies := mapset.NewSet()
-	for _, nameI := range dependencies.ToSlice() {
+	for _, nameI := range d.ToSlice() {
 		name := fmt.Sprintf("%s", nameI)
+
+		if r.Replaces.Contains(name) {
+			continue
+		}
+
 		r.DependencyNames.Add(name)
 		dm, err := r.Fetcher.Get(name)
 
 		if err != nil {
 			panic(err)
 		}
+
 		r.Dependencies[name] = dm
 		for _, sd := range dm {
 			for packageName, _ := range sd.Requires {
 				subDependencies.Add(packageName)
+			}
+			for replaceName, _ := range sd.Replaces {
+				r.Replaces.Add(replaceName)
 			}
 		}
 
@@ -64,6 +74,7 @@ func GetNewRepo(fetcher DependencyFetcher) DependencyRepo {
 	dr := DependencyRepo{
 
 		DependencyNames: mapset.NewSet(),
+		Replaces: mapset.NewSet(),
 		Dependencies:    map[string]map[string]Dependency{},
 		Fetcher:         fetcher,
 	}
