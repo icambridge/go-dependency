@@ -46,28 +46,6 @@ func Test_GetAllDependencies(t *testing.T) {
 	}
 }
 
-
-
-func Test_GetAllDependencies_Without_Replaced(t *testing.T) {
-	packages := mapset.NewSet()
-	packages.Add("behat/mink-selenium")
-	packages.Add("behat/mink-ext")
-
-	f := MockFetcher{}
-
-	r := GetNewRepo(f)
-
-	r.GetAll(packages)
-
-	expected := mapset.NewSet()
-	expected.Add("behat/mink-ext")
-	expected.Add("behat/mink-selenium")
-	expected.Add("behat/mink-v2")
-
-	if !r.DependencyNames.Equal(expected) {
-		t.Errorf("Expected %s, but got %s", expected, r.DependencyNames)
-	}
-}
 type MockFetcher struct {
 }
 

@@ -45,10 +45,6 @@ func (r DependencyRepo) GetAll(dependencies mapset.Set) {
 	for _, nameI := range d.ToSlice() {
 		name := fmt.Sprintf("%s", nameI)
 
-		if r.Replaces.Contains(name) {
-			continue
-		}
-
 		r.DependencyNames.Add(name)
 		dm, err := r.Fetcher.Get(name)
 
@@ -61,11 +57,8 @@ func (r DependencyRepo) GetAll(dependencies mapset.Set) {
 			for packageName, _ := range sd.Requires {
 				subDependencies.Add(packageName)
 			}
-			for replaceName, _ := range sd.Replaces {
-				r.Replaces.Add(replaceName)
-			}
-		}
 
+		}
 	}
 	r.GetAll(subDependencies)
 }
