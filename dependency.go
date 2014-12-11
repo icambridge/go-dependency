@@ -12,6 +12,14 @@ type Dependency struct {
 	Replaces map[string]string
 }
 
+func (d Dependency) ReplaceSelfVersion() {
+	for k, v := range d.Requires {
+		if v == "self.version" {
+			d.Requires[k] = d.Version
+		}
+	}
+}
+
 func GetPackageNames(d Dependency) mapset.Set {
 	packages := mapset.NewSet()
 
@@ -21,6 +29,7 @@ func GetPackageNames(d Dependency) mapset.Set {
 
 	return packages
 }
+
 
 type DependencyFetcher interface {
 	Get(dependencyName string) (map[string]Dependency, error)

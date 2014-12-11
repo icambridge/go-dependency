@@ -46,6 +46,22 @@ func Test_GetAllDependencies(t *testing.T) {
 	}
 }
 
+func Test_Replaces_SelfVersion(t *testing.T) {
+	root := Dependency{
+		Name: "App",
+		Version: "1.2",
+		Requires: map[string]string{
+			"behat/mink-symfony": "self.version",
+			"behat/mink-ext":     "~1.1",
+		},
+	}
+	root.ReplaceSelfVersion()
+
+	if versionNum := "1.2"; root.Requires["behat/mink-symfony"] != versionNum {
+		t.Errorf("Expected %v but got %v", versionNum, root.Requires["behat/mink-symfony"])
+	}
+}
+
 type MockFetcher struct {
 }
 
