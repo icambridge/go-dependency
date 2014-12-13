@@ -79,6 +79,9 @@ func (s Solver) Inner(rules map[string]mapset.Set) error {
 				if !ok || foundVersion != versionNum {
 					s.Found[packageName] = versionNum
 					foundV :=  s.Packages[packageName][versionNum]
+					for k, _ := range foundV.Replaces {
+						s.Replaced.Add(k)
+					}
 					required = append(required, foundV)
 				}
 				break

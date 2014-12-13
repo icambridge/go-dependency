@@ -467,7 +467,6 @@ func Test_Gets_Replaces(t *testing.T) {
 		},
 	}
 	replaced := mapset.NewSet()
-	replaced.Add("behat/mink")
 	s := NewSolver(packages, replaced)
 	required, err := s.Solve(root)
 
