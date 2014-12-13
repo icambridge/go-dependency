@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/deckarep/golang-set"
 	"github.com/mcuadros/go-version"
+	"strings"
 )
 
 type Solver struct {
@@ -103,6 +104,7 @@ func GetRules(dependency []Dependency) map[string]mapset.Set {
 		root.ReplaceSelfVersion()
 		for requiredName, requiredRule := range root.Requires {
 
+			requiredName = strings.ToLower(requiredName)
 			_, ok := find[requiredName]
 
 			if !ok {
