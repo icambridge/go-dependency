@@ -61,7 +61,7 @@ func (s Solver) Inner(rules map[string]mapset.Set) error {
 			passes := 0
 
 			for _, packageRuleI := range s.Rules[packageName].ToSlice() {
-				// todo move to one creation
+
 				packageRule := fmt.Sprintf("%s", packageRuleI)
 				cg, found := s.RuleConstraints[packageRule]
 				if !found {
@@ -97,6 +97,7 @@ func GetRules(dependency []Dependency) map[string]mapset.Set {
 
 	find := map[string]mapset.Set{}
 	for _, root := range dependency {
+		root.ReplaceSelfVersion()
 		for requiredName, requiredRule := range root.Requires {
 
 			_, ok := find[requiredName]
