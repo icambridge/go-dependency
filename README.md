@@ -10,7 +10,7 @@ Installation
 
 The recommended way to install go-dependency
 
-```
+```go
     get github.com/icambridge/go-dependency
 ```
 
@@ -28,7 +28,8 @@ import (
 Create your own DependencyFetcher
 
 
-```type MockFetcher struct {
+```go
+type MockFetcher struct {
 }
 
 func (mf MockFetcher) Get(dependencyName string) (map[string]dependency.Dependency, error) {
@@ -38,13 +39,15 @@ func (mf MockFetcher) Get(dependencyName string) (map[string]dependency.Dependen
 
 Pass that to the Repo
 
-```
+```go
 f := MockFetcher{}
 r := dependency.GetNewRepo(f)
 ```
 
+Then to use
 
-```d := dependency.Dependency{Require: map[string]string{"behat/behat": "~1.3"}}
+```go
+d := dependency.Dependency{Require: map[string]string{"behat/behat": "~1.3"}}
 
 p := dependency.GetPackageNames(d)
 
