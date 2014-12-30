@@ -1,7 +1,7 @@
 go-dependency
 =============
 
-[![Build Status](https://travis-ci.org/icambridge/go-dependency.svg)](https://travis-ci.org/icambridge/go-dependency)
+[![Build Status](https://travis-ci.org/icambridge/go-dependency.svg)](https://travis-ci.org/icambridge/go-dependency)[![Coverage Status](https://img.shields.io/coveralls/icambridge/go-dependency.svg)](https://coveralls.io/r/icambridge/go-dependency)
 
 A version dependency resolving library in Go.
 
