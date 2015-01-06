@@ -48,7 +48,7 @@ func Test_GetAllDependencies(t *testing.T) {
 
 func Test_Replaces_SelfVersion(t *testing.T) {
 	root := Dependency{
-		Name: "App",
+		Name:    "App",
 		Version: "1.2",
 		Requires: map[string]string{
 			"behat/mink-symfony": "self.version",
@@ -105,7 +105,6 @@ func (mf MockFetcher) Get(dependencyName string) (map[string]Dependency, error) 
 		},
 	}
 
-
 	minkSeleniumBrowser := map[string]Dependency{
 		"1.2.0": Dependency{
 			Name:    "behat/mink-selenium",
@@ -122,7 +121,6 @@ func (mf MockFetcher) Get(dependencyName string) (map[string]Dependency, error) 
 			},
 		},
 	}
-
 
 	minkV2 := map[string]Dependency{
 		"1.6.0": Dependency{

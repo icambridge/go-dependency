@@ -30,14 +30,13 @@ func GetPackageNames(d Dependency) mapset.Set {
 	return packages
 }
 
-
 type DependencyFetcher interface {
 	Get(dependencyName string) (map[string]Dependency, error)
 }
 
 type DependencyRepo struct {
 	DependencyNames mapset.Set
-	Replaces mapset.Set
+	Replaces        mapset.Set
 	Dependencies    map[string]map[string]Dependency
 	Fetcher         DependencyFetcher
 }
@@ -76,7 +75,7 @@ func GetNewRepo(fetcher DependencyFetcher) DependencyRepo {
 	dr := DependencyRepo{
 
 		DependencyNames: mapset.NewSet(),
-		Replaces: mapset.NewSet(),
+		Replaces:        mapset.NewSet(),
 		Dependencies:    map[string]map[string]Dependency{},
 		Fetcher:         fetcher,
 	}

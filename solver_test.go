@@ -1,8 +1,8 @@
 package dependency
 
 import (
-	"testing"
 	"github.com/deckarep/golang-set"
+	"testing"
 )
 
 func Test_Gets_Correct(t *testing.T) {

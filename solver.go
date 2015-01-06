@@ -28,7 +28,7 @@ func (s Solver) Solve(root Dependency) (map[string]string, error) {
 			output[k] = v
 		}
 	}
-	
+
 	return output, err
 }
 
@@ -79,7 +79,7 @@ func (s Solver) Inner(rules map[string]mapset.Set) error {
 				foundVersion, ok := s.Found[packageName]
 				if !ok || foundVersion != versionNum {
 					s.Found[packageName] = versionNum
-					foundV :=  s.Packages[packageName][versionNum]
+					foundV := s.Packages[packageName][versionNum]
 					for k, _ := range foundV.Replaces {
 						s.Replaced.Add(k)
 					}
